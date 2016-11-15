@@ -21,6 +21,10 @@
 
 # References
 
+> http://jamie-wong.com/2014/08/19/metaballs-and-marching-squares
+
+> https://en.wikipedia.org/wiki/Metaballs
+
 # Assessment
 
  We will know that we have coded a successful implementation of metaballs when the balls collide and split in a fluid-like manner. Some reach goals that we think could be feasible is using other shapes instead of circles. Another possible reach goal is extending this project so that we use three-dimensional shapes instead of two-dimensional shapes. 
