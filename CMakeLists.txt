@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.11)
-project(Final)
+project(lab02-03)
 
 set(CMAKE_CXX_FLAGS "-g -Wall")
 
@@ -22,45 +22,49 @@ include_directories(${Qt5Widgets_INCLUDE_DIRS} ${Qt5OpenGL_INCLUDE_DIRS})
 
 
 #get symlink_data macro
-#include(${CMAKE_SOURCE_DIR}/cmake_modules/helpers.cmake)
+include(${CMAKE_SOURCE_DIR}/cmake_modules/helpers.cmake)
 
-#set(QTHDRS
-#  mainwindow.h
-#  mypanelopengl.h
-#)
+set(QTHDRS
+  mainwindow.h
+  mypanelopengl.h
+  geomfun.h
+)
 
 #window design files
-#set(QTFORMS mainwindow.ui)
+set(QTFORMS mainwindow.ui)
 
 #Run qt tools to auto generate C++ compatible files
-#QT5_WRAP_CPP(QTHDRS_MOC ${QTHDRS})
-#QT5_WRAP_UI(QTFORMS_HDRS ${QTFORMS})
-#set(MYQTFILES ${QTHDRS_MOC} ${QTFORMS_HDRS})
+QT5_WRAP_CPP(QTHDRS_MOC ${QTHDRS})
+QT5_WRAP_UI(QTFORMS_HDRS ${QTFORMS})
+set(MYQTFILES ${QTHDRS_MOC} ${QTFORMS_HDRS})
 
 
 # Build the library of shapes
 # TODO: gradually add new shape headers/src as you implement them
-#set(LIBHDRS drawable.h triangle.h rectangle.h line.h circle.h geomfun.h)
-#set(LIBSRC  drawable.cpp triangle.cpp rectangle.cpp line.cpp circle.cpp geomfun.cpp)
-#add_library(libfinal ${LIBHDRS} ${LIBSRC})
+set(LIBHDRS drawable.h triangle.h rectangle.h line.h circle.h)
+QT5_WRAP_CPP(LIBHDRS_MOC ${LIBHDRS})
+set(LIBSRC  drawable.cpp triangle.cpp rectangle.cpp line.cpp circle.cpp)
+add_library(libproj2 ${LIBHDRS} ${LIBSRC})
 
 #normal source files
-#set(SRC
-#  main.cpp
-#  mainwindow.cpp
-#  mypanelopengl.cpp
-#)
+set(SRC
+  main.cpp
+  mainwindow.cpp
+  mypanelopengl.cpp
+  geomfun.cpp
+)
 
 # Allow shaders to show up in QT Creator
-#set(SHADERS
-#  shaders/vshader.glsl
-#  shaders/fshader.glsl
-#)
+set(SHADERS
+  shaders/vshader.glsl
+  shaders/fshader.glsl
+)
 
 
 #compile
-#add_executable(final ${SRC} ${LIBHDRS} ${MYQTFILES} ${SHADERS})
+add_executable(qtCAD ${SRC} ${LIBHDRS} ${MYQTFILES} ${SHADERS})
 #link against QT libs
-#set(EXTLIBS ${OPENGL_LIBRARY} Qt5::Widgets Qt5::OpenGL)
-#target_link_libraries(final libfinal ${EXTLIBS})
-#symlink_data(final-shaders shaders)
+set(EXTLIBS ${OPENGL_LIBRARY} Qt5::Widgets Qt5::OpenGL)
+target_link_libraries(qtCAD libproj2 ${EXTLIBS})
+#symlink data folder with images
+symlink_data(lab2-shaders shaders)
