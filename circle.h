@@ -31,9 +31,13 @@ class Circle : public Drawable {
 
      float translateX();
 
-     float translateY(); 
+     float translateY();
+
+
+     void movePlus(int width, int height);
 
    private:
+      
      //Vertices of Circle in ccw order
      vec2* m_pts;
      int numVertices;

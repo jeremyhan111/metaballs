@@ -22,6 +22,8 @@ MyPanelOpenGL::MyPanelOpenGL(QWidget *parent) :
     curr_color=vec3(0,0,0);
     movingShapeI = -1;
     m_matrix.setColumn(3,QVector4D(-1,1,0,1));
+
+    m_timer = NULL;
 }
 
 /* destructor */
@@ -43,11 +45,16 @@ void MyPanelOpenGL::initializeGL()
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
     createShaders();
 
+    m_timer = new QTimer(this);
+    connect(m_timer, SIGNAL(timeout()), this, SLOT(updateTime()));
+    m_timer->start(10);
+
 }
 
 /* resizeGL - override builtin method. automatically called when window resized */
 void MyPanelOpenGL::resizeGL(int w, int h)
 {
+    m_width = w; m_height = h;
     glViewport(0,0,w, h);
     m_matrix.setColumn(0,QVector4D(2./w,0,0,0));
     m_matrix.setColumn(1,QVector4D(0,-2./h,0,0));
@@ -78,6 +85,13 @@ void MyPanelOpenGL::paintGL(){
 
     glFlush();
     m_shaderProgram->release();
+}
+
+void MyPanelOpenGL::updateTime(){
+    /* TODO: modify when animation loop and timer are connected */
+    /* trigger a refresh */
+    update();
+    translate();
 }
 
 /* mousePressEvent - grab click and add it to live_clicks queue. Then, depending
@@ -129,9 +143,9 @@ void MyPanelOpenGL::mousePressEvent(QMouseEvent *event){
  *  has been noted, move 'current' with mouse. Update new location of click*/
 void MyPanelOpenGL::mouseMoveEvent(QMouseEvent *event){
     vec2 click(event->pos().x(),event->pos().y());
-    if (m_currentMode == MOVING && live_clicks.size()==1){
-        translate();
-    }
+    //if (m_currentMode == MOVING && live_clicks.size()==1){
+    translate();
+    //}
 }
 
 /*createShaders */
@@ -173,10 +187,11 @@ void MyPanelOpenGL::destroyShaders(){
 
 void MyPanelOpenGL::translate() {
     for (int i = 0; i < m_shapes.size(); i++) {
-        float dx = m_shapes[i]->translateX();
+        /*float dx = m_shapes[i]->translateX();
         float dy = m_shapes[i]->translateY();
         m_shapes[i]->move(dx, dy);
-        std::cout << dx << " " << dy << " " << i << std::endl;
+        std::cout << dx << " " << dy << " " << i << std::endl;*/
+        m_shapes[i]->movePlus(m_width, m_height);
     }
 }
 
@@ -252,61 +267,6 @@ void MyPanelOpenGL::addCircle(){
     live_clicks.clear();
 }
 
-/* addLine - called from mousePressEvent
- *  if only one click recorded, return in order to wait for second click.
- *  When two clicks, create using two clicks, and then clear live_clicks */
-/*void MyPanelOpenGL::addLine(){
-    if (live_clicks.size()<2){ return; }
-    if (live_clicks.size()>2){ std::cout<<"NOOOOO!!!!\n"; return;} //this shouldnt happen!!
-
-    Line* line;
-    line = new Line(m_shaderProgram, live_clicks[0], live_clicks[1]);
-    line->setColor(curr_color);
-
-    m_shapes.append(line);
-    update();
-
-    //clear live_clicks
-    live_clicks.clear();
-}*/
-
-/* addTriangle - called from mousePressEvent
- *  if only one/two clicks recorded, return in order to wait for thirs click.
- *  once three clicks recorded in live_clicks, use points to create triangle,
- *  and then clear live_clicks */
-/*void MyPanelOpenGL::addTriangle(){
-    if (live_clicks.size()<3){ return; }
-    if (live_clicks.size()>3){ std::cout<<"NOOOOO!!!!\n"; return;} //this shouldnt happen!!
-
-    Triangle* tri;
-    tri = new Triangle(m_shaderProgram, live_clicks[0], live_clicks[1],
-      live_clicks[2]);
-    tri->setColor(curr_color);
-
-    m_shapes.append(tri);
-    update();
-
-    //clear live_clicks
-    live_clicks.clear();
-}*/
-
-/* addRectangle - called from mousePressEvent
- *  if only one click recorded, return in order to wait for second click.
- *  once all recorded, create rectangle, clear live_clicks */
-/*void MyPanelOpenGL::addRectangle(){
-    if (live_clicks.size()<2){ return; }
-    if (live_clicks.size()>2){ std::cout<<"NOOOOO!!!!\n"; return;} //this shouldnt happen!!
-
-    Rectangle* rect;
-    rect = new Rectangle(m_shaderProgram, live_clicks[0], live_clicks[1]);
-    rect->setColor(curr_color);
-
-    m_shapes.append(rect);
-    update();
-
-    //clear live_clicks
-    live_clicks.clear();
-}*/
 
 /* setRandom - set random color. This called each time random (color) is
  *  selected, so random color only regenerated when random option re-selected */

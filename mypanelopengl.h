@@ -36,6 +36,7 @@ public:
     virtual ~MyPanelOpenGL();
 
 private:
+    int m_width, m_height;
     /* shader/program objects */
     QOpenGLShader *m_vertexShader;
     QOpenGLShader *m_fragmentShader;
@@ -49,6 +50,8 @@ private:
 
     /* list of drawable shapes */
     QList<cs40::Drawable*> m_shapes;
+
+    QTimer* m_timer;      /* event timer */
 
     /* helpers */
     void createShaders();
@@ -85,6 +88,9 @@ public slots:
     void setGreen(){ curr_color=vec3(0,1.,0); }
     void setYellow(){ curr_color=vec3(1.,1.,0); }
     void setRandom(); //new random color only generated when box actually clicked
+
+    /* trigger update of GL window */
+    void updateTime();
 
 };
 

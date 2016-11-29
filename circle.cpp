@@ -83,6 +83,7 @@ Circle::Circle(QOpenGLShaderProgram* const prog,
 
 
     float rad = sqrt(pow(pt2.x()-pt.x(),2) + pow(pt2.y()-pt.y(),2));
+    m_rad = rad;
 
 
     //circle is implemented in a manner such that the points
@@ -184,4 +185,28 @@ float Circle::translateX() {
 
 float Circle::translateY() {
   return timestep*m_velocity[1];
+}
+
+void Circle::movePlus(int width, int height){
+  //translate x and y
+  float dx = translateX();
+  float dy = translateY();
+  //move
+  move(dx,dy);
+  //check if out of bounds
+  std::cout<<m_rad<<std::endl;
+  vec2 temp = m_pts[0]+m_displacement;
+  std::cout<<temp<<std::endl;
+  if (temp[0]-m_rad<0){ //left wall
+    m_velocity[0] *= -1;
+
+  } else if (temp[1]-m_rad <0){ //top wall
+    m_velocity[1] *= -1;
+
+  } else if(temp[0]+m_rad>=width){ //right wall
+    m_velocity[0] *= -1;
+
+  } else if(temp[1]+m_rad>=height){ //bottom wall
+     m_velocity[1] *= -1;
+  }
 }
