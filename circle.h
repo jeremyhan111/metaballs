@@ -35,9 +35,12 @@ class Circle : public Drawable {
 
 
      void movePlus(int width, int height);
+     float getRadius();
+     float getX();
+     float getY();
 
    private:
-      
+
      //Vertices of Circle in ccw order
      vec2* m_pts;
      int numVertices;

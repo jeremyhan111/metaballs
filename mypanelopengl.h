@@ -4,6 +4,7 @@
 #include <QtWidgets>
 #include <QtOpenGL>
 #include "drawable.h"
+#include "circle.h"
 
 using namespace cs40;
 
@@ -37,6 +38,9 @@ public:
 
 private:
     int m_width, m_height;
+    float ** m_Field;
+    int m_scalarSize;
+
     /* shader/program objects */
     QOpenGLShader *m_vertexShader;
     QOpenGLShader *m_fragmentShader;
@@ -49,7 +53,7 @@ private:
     int movingShapeI; //index of 'current' shape for MOVING mode
 
     /* list of drawable shapes */
-    QList<cs40::Drawable*> m_shapes;
+    QList<cs40::Circle*> m_shapes;
 
     QTimer* m_timer;      /* event timer */
 
@@ -61,7 +65,7 @@ private:
     void moving();
     void deleting();
     void changeColor();
-    void addCircle();
+    void addCircle(bool random);
     void addLine();
     void addTriangle();
     void addRectangle();
@@ -91,6 +95,7 @@ public slots:
 
     /* trigger update of GL window */
     void updateTime();
+    float computeFunction(float x, float y);
 
 };
 

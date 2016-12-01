@@ -1,11 +1,11 @@
-#include "mypanelopengl.h"
+ #include "mypanelopengl.h"
 #include <cmath>
 #include <iostream>
 #include <QVector4D>
 #include "triangle.h"
 #include "rectangle.h"
 #include "line.h"
-#include "circle.h"
+
 #include "geomfun.h"
 
 using namespace cs40;
@@ -49,11 +49,18 @@ void MyPanelOpenGL::initializeGL()
     connect(m_timer, SIGNAL(timeout()), this, SLOT(updateTime()));
     m_timer->start(10);
 
+    m_scalarSize = 20;
+    m_scalarField = new float*[m_scalarSize];
+    for (int i = 0; i<m_scalarSize; i++){
+      m_scalarField[i] = new float[m_scalarSize];
+    }
+
 }
 
 /* resizeGL - override builtin method. automatically called when window resized */
 void MyPanelOpenGL::resizeGL(int w, int h)
 {
+    std::cout.flush();
     m_width = w; m_height = h;
     glViewport(0,0,w, h);
     m_matrix.setColumn(0,QVector4D(2./w,0,0,0));
@@ -63,6 +70,19 @@ void MyPanelOpenGL::resizeGL(int w, int h)
 
 /* paintGL - automatically called by update() */
 void MyPanelOpenGL::paintGL(){
+
+    //compute and draw metabals lines TODO: put this in another function, create field of lines
+    for (int i =0; i<m_scalarSize; i++){
+      for (int j =0; j<m_scalarSize; j++){
+        float q_x;
+        float q_y;
+        float p_x;
+        float p_y;
+        q_x = i
+        computeFunction()
+      }
+    }
+
 
     if(!m_shaderProgram){
         return; /* give up */
@@ -88,8 +108,10 @@ void MyPanelOpenGL::paintGL(){
 }
 
 void MyPanelOpenGL::updateTime(){
-    /* TODO: modify when animation loop and timer are connected */
-    /* trigger a refresh */
+  //update corner values
+
+
+
     update();
     translate();
 }
@@ -103,6 +125,10 @@ void MyPanelOpenGL::updateTime(){
  *  that future calls to helper wont use old data. This means that live_clicks
  *  should never have more than 3 elements */
 void MyPanelOpenGL::mousePressEvent(QMouseEvent *event){
+    //init random circles
+    addCircle(true);
+
+    /*
     vec2 click(event->localPos().x(),event->localPos().y());
     QVector4D worldPoint(click, 0, 1);
     live_clicks.append(worldPoint.toVector2D());
@@ -125,7 +151,7 @@ void MyPanelOpenGL::mousePressEvent(QMouseEvent *event){
             changeColor();
             break;
         case ADD_CIRCLE:
-            addCircle();
+            addCircle(false);
             break;
         /*case ADD_TRIANGLE:
             addTriangle();
@@ -135,8 +161,8 @@ void MyPanelOpenGL::mousePressEvent(QMouseEvent *event){
             break;
         case ADD_LINE:
             addLine();
-            break;*/
-    }
+            break;
+    }*/
 }
 
 /* mouseMoveEvent - if mouse is moving and MOVING is selected. and first click
@@ -252,8 +278,32 @@ void MyPanelOpenGL::changeColor(){
  *  if two clicks recorded in live_clicks, first click is center, second
  *  indicates radius. Use that info to create circle, and then clear
  *  live_clicks */
-void MyPanelOpenGL::addCircle(){
-    if (live_clicks.size()<2){ return; }
+void MyPanelOpenGL::addCircle(bool random){
+    if (!random){
+      if (live_clicks.size()<2){ return; }
+    } else { //randomly generate live_clicks
+      int x=rand()%m_width;
+      int y = rand()%m_height;
+      int rad = rand()%30+30;
+      //ensure entire circle is within window
+      if (x+rad>=m_width){ x = x-rad-1;}
+      if (x-rad<0){ x = rad;}
+      if (y+rad>=m_height){ y = y-rad-1;}
+      if (y-rad<0){ y = rad;}
+
+      vec2 pt(x,y);
+      QVector4D worldPoint(pt, 0, 1);
+
+      Circle* circ;
+      circ = new Circle(m_shaderProgram, pt, rad);
+      //setRandom();
+      circ->setColor(curr_color);
+
+      m_shapes.append(circ);
+      update();
+      return;
+    }
+
     if (live_clicks.size()>2){ std::cout<<"NOOOOO!!!!\n"; return;} //this shouldnt happen!!
 
     Circle* circ;
@@ -267,6 +317,37 @@ void MyPanelOpenGL::addCircle(){
     live_clicks.clear();
 }
 
+float MyPanelOpenGL::computeFunction(float x, float y){
+  float ret = 0;
+  for(int k =0; k<m_scalarSize; k++){
+    float r_squared = m_shapes[k]->getRadius() * m_shapes[k]->getRadius();
+    float x_comp = x - m_shapes[k]->getX();
+    x_comp *= x_comp;
+    float y_comp = y- m_shapes[k]->getY();
+    y_comp *= y_comp;
+    ret += r_squared/(x_comp+y_comp);
+  }
+
+  return ret;
+
+
+  /*
+  for (int i =0; i<m_scalarSize; i++){
+    for (int j =0; j<m_scalarSize; j++){
+      float temp = 0;
+      for(int k = 0; k<m_shapes.size();k++){
+        float r_squared = m_shapes[k]->getRadius() * m_shapes[k]->getRadius();
+        float x_comp = m_width/m_scalarSize * i - m_shapes[k]->getX();
+        x_comp *= x_comp;
+        float y_comp = m_height/m_scalarSize * i - m_shapes[k]->getY();
+        y_comp *= y_comp;
+        temp += r_squared/(x_comp+y_comp);
+      }
+      m_scalarField[i][j] = temp;
+    }
+  }
+  */
+}
 
 /* setRandom - set random color. This called each time random (color) is
  *  selected, so random color only regenerated when random option re-selected */

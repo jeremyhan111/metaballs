@@ -58,6 +58,7 @@ public:
     virtual void move(float dx, float dy);
 
     virtual void movePlus(int width, int height) = 0;
+    virtual float getRadius() =0;
 
     /* return true if shape contains point pt, false otherwise
      * Pure virtual. Must be implemented in derived class
@@ -100,4 +101,3 @@ protected:
 };
 
 } //namespace
-

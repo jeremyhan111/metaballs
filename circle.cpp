@@ -35,7 +35,7 @@ Circle::Circle(QOpenGLShaderProgram* const prog,
     m_rad = rad;
     m_velocity[0] = 10;
     m_velocity[1] = -10;
-    timestep = 1;
+    timestep = 2;
 
 
     if (initVBO()) {
@@ -194,19 +194,35 @@ void Circle::movePlus(int width, int height){
   //move
   move(dx,dy);
   //check if out of bounds
-  std::cout<<m_rad<<std::endl;
   vec2 temp = m_pts[0]+m_displacement;
-  std::cout<<temp<<std::endl;
   if (temp[0]-m_rad<0){ //left wall
     m_velocity[0] *= -1;
+    move(-dx, -dy);
 
   } else if (temp[1]-m_rad <0){ //top wall
     m_velocity[1] *= -1;
+    move(-dx, -dy);
 
   } else if(temp[0]+m_rad>=width){ //right wall
     m_velocity[0] *= -1;
+    move(-dx, -dy);
 
   } else if(temp[1]+m_rad>=height){ //bottom wall
      m_velocity[1] *= -1;
+     move(-dx, -dy);
   }
+}
+
+float Circle::getRadius(){
+  return m_rad;
+}
+
+float Circle::getX(){
+  vec2 temp = m_pts[0]+m_displacement;
+  return temp[0];
+}
+
+float Circle::getY() {
+  vec2 temp = m_pts[0]+m_displacement;
+  return temp[0];
 }
