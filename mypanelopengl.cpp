@@ -49,13 +49,21 @@ void MyPanelOpenGL::initializeGL()
     connect(m_timer, SIGNAL(timeout()), this, SLOT(updateTime()));
     m_timer->start(10);
 
-    m_scalarSize = 20;
-    m_scalarField = new float*[m_scalarSize];
-    for (int i = 0; i<m_scalarSize; i++){
-      m_scalarField[i] = new float[m_scalarSize];
+    m_fsize = 20;
+    vec2 p1(0,0);
+    vec2 p2(0,0);
+    m_Field = new Line*[m_fsize];
+    for (int i = 0; i<m_fsize; i++){
+      m_Field[i] = new Line[m_fsize];
+      for( int j = 0; j<m_fsize; j++){
+        //make default lines by overriding each 'line'
+        m_Field[i][j] = Line(m_shaderProgram, p1, p2);
+        m_Field[i][j].hide();
+      }
     }
 
 }
+
 
 /* resizeGL - override builtin method. automatically called when window resized */
 void MyPanelOpenGL::resizeGL(int w, int h)
@@ -71,19 +79,6 @@ void MyPanelOpenGL::resizeGL(int w, int h)
 /* paintGL - automatically called by update() */
 void MyPanelOpenGL::paintGL(){
 
-    //compute and draw metabals lines TODO: put this in another function, create field of lines
-    for (int i =0; i<m_scalarSize; i++){
-      for (int j =0; j<m_scalarSize; j++){
-        float q_x;
-        float q_y;
-        float p_x;
-        float p_y;
-        q_x = i
-        computeFunction()
-      }
-    }
-
-
     if(!m_shaderProgram){
         return; /* give up */
     }
@@ -98,9 +93,15 @@ void MyPanelOpenGL::paintGL(){
     //m_matrix(1,1)=1;
     m_shaderProgram->setUniformValue("mview", m_matrix);
 
-
+    //print circles
     for(int i=0; i<m_shapes.size(); i++){
       if (m_shapes[i]->isVisible()){ m_shapes[i]->draw(); }
+    }
+    //print lines
+    for(int i=0; i<m_fsize; i++){
+      for(int j=0; j<m_fsize; j++){
+        if (m_Field[i][j].isVisible()){m_Field[i][j].draw();}
+      }
     }
 
     glFlush();
@@ -111,9 +112,22 @@ void MyPanelOpenGL::updateTime(){
   //update corner values
 
 
+    translate();
+
 
     update();
-    translate();
+
+}
+
+void MyPanelOpenGL::updateLines(){
+  //compute and draw metabals lines TODO: put this in another function, create field of lines
+  for (int i =0; i<m_fsize; i++){
+    for (int j =0; j<m_fsize; j++){
+      //compute corners
+      int [4] corners;
+
+    }
+  }
 }
 
 /* mousePressEvent - grab click and add it to live_clicks queue. Then, depending
@@ -317,9 +331,9 @@ void MyPanelOpenGL::addCircle(bool random){
     live_clicks.clear();
 }
 
-float MyPanelOpenGL::computeFunction(float x, float y){
+float MyPanelOpenGL::fFunc(float x, float y){
   float ret = 0;
-  for(int k =0; k<m_scalarSize; k++){
+  for(int k =0; k<m_fsize; k++){
     float r_squared = m_shapes[k]->getRadius() * m_shapes[k]->getRadius();
     float x_comp = x - m_shapes[k]->getX();
     x_comp *= x_comp;
@@ -332,14 +346,14 @@ float MyPanelOpenGL::computeFunction(float x, float y){
 
 
   /*
-  for (int i =0; i<m_scalarSize; i++){
-    for (int j =0; j<m_scalarSize; j++){
+  for (int i =0; i<m_fsize; i++){
+    for (int j =0; j<m_fsize; j++){
       float temp = 0;
       for(int k = 0; k<m_shapes.size();k++){
         float r_squared = m_shapes[k]->getRadius() * m_shapes[k]->getRadius();
-        float x_comp = m_width/m_scalarSize * i - m_shapes[k]->getX();
+        float x_comp = m_width/m_fsize * i - m_shapes[k]->getX();
         x_comp *= x_comp;
-        float y_comp = m_height/m_scalarSize * i - m_shapes[k]->getY();
+        float y_comp = m_height/m_fsize * i - m_shapes[k]->getY();
         y_comp *= y_comp;
         temp += r_squared/(x_comp+y_comp);
       }
@@ -347,6 +361,16 @@ float MyPanelOpenGL::computeFunction(float x, float y){
     }
   }
   */
+}
+
+//basically computing q_y
+float MyPanelOpenGL::lerpFunc(int b_x, int b_y, int d_x, int d_y){
+  float ret;
+  ret = 1-fFunc(b_x, b_y);
+  ret/= (fFunc(d_x, d_y)-fFunc(b_x, b_y));
+  ret *= (d_y-b_y);
+  ret = b_y - ret;
+  return ret;
 }
 
 /* setRandom - set random color. This called each time random (color) is

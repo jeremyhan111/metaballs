@@ -35,10 +35,6 @@ public:
      * Draws object in current openGL context*/
     virtual void draw()=0;
 
-    virtual float translateX()=0;
-
-    virtual float translateY()=0;
-
     /* Generate Vertex Buffer Object, but do not bind/allocate.
      * Return true if generate was a success, false otherwise
      */
@@ -56,9 +52,6 @@ public:
      * Provide a default implemtation, but allow over-riding
      */
     virtual void move(float dx, float dy);
-
-    virtual void movePlus(int width, int height) = 0;
-    virtual float getRadius() =0;
 
     /* return true if shape contains point pt, false otherwise
      * Pure virtual. Must be implemented in derived class

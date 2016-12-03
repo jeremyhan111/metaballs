@@ -3,8 +3,8 @@
 
 using namespace cs40;
 
-Line::Line(QOpenGLShaderProgram* const prog,
-    const vec2& pt1, const vec2& pt2) {
+Line::Line(){}
+Line::Line(QOpenGLShaderProgram* const prog, vec2 pt1, vec2 pt2) {
     m_prog = prog;
     int numVertices = 2;
 
@@ -39,6 +39,7 @@ Line::Line(QOpenGLShaderProgram* const prog,
         m_vao->release();
     }
 }
+
 
 Line::Line(const Line *other){
 

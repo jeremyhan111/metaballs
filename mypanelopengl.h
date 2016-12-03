@@ -5,6 +5,7 @@
 #include <QtOpenGL>
 #include "drawable.h"
 #include "circle.h"
+#include "line.h"
 
 using namespace cs40;
 
@@ -38,8 +39,8 @@ public:
 
 private:
     int m_width, m_height;
-    float ** m_Field;
-    int m_scalarSize;
+    Line ** m_Field; //2d array of pointers to lines
+    int m_fsize;
 
     /* shader/program objects */
     QOpenGLShader *m_vertexShader;
@@ -94,8 +95,10 @@ public slots:
     void setRandom(); //new random color only generated when box actually clicked
 
     /* trigger update of GL window */
+    void updateLines();
     void updateTime();
-    float computeFunction(float x, float y);
+    float fFunc(float x, float y);
+    float lerpFunc(int b_x, int b_y, int d_x, int d_y);
 
 };
 
