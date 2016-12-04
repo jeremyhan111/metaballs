@@ -35,7 +35,7 @@ Circle::Circle(QOpenGLShaderProgram* const prog,
     m_rad = rad;
     m_velocity[0] = 10;
     m_velocity[1] = -10;
-    timestep = 2;
+    timestep = .1;
 
 
     if (initVBO()) {

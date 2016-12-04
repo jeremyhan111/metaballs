@@ -52,6 +52,7 @@ void MyPanelOpenGL::initializeGL()
     m_fsize = 20;
     vec2 p1(0,0);
     vec2 p2(0,0);
+
     m_Field = new Line*[m_fsize];
     for (int i = 0; i<m_fsize; i++){
       m_Field[i] = new Line[m_fsize];
@@ -61,6 +62,7 @@ void MyPanelOpenGL::initializeGL()
         m_Field[i][j].hide();
       }
     }
+
 
 }
 
@@ -97,12 +99,19 @@ void MyPanelOpenGL::paintGL(){
     for(int i=0; i<m_shapes.size(); i++){
       if (m_shapes[i]->isVisible()){ m_shapes[i]->draw(); }
     }
+
     //print lines
+
     for(int i=0; i<m_fsize; i++){
       for(int j=0; j<m_fsize; j++){
-        if (m_Field[i][j].isVisible()){m_Field[i][j].draw();}
+        if (m_Field[i][j].isVisible()){
+          //TODO TODO TODO:: segfaulting here
+          m_Field[i][j].draw();
+          std::cout<<i<<" "<<j<<std::endl; std::cout.flush();
+        }
       }
     }
+
 
     glFlush();
     m_shaderProgram->release();
@@ -110,25 +119,113 @@ void MyPanelOpenGL::paintGL(){
 
 void MyPanelOpenGL::updateTime(){
   //update corner values
+  translate();
+    for(int i=0;i<m_fsize; i++){
+      for(int j=0;j<m_fsize;j++){
+        //grab 4 corners
+
+        int config = 0; //indicates which of 16 cases. think binary
+        //corner 1:
+        int x = i*m_width/m_fsize;
+        int y = j*m_height/m_fsize;
 
 
-    translate();
+        if (fFunc(x,y)>=1){ config+=8; } //note, 8=2^3
+
+        //corner 2
+        x+=m_width/m_fsize;
+        if (fFunc(x,y)>=1){ config+=4; }//note, 4=2^2
+        //corner 3
+        y+=m_width/m_fsize;
+        if (fFunc(x,y)>=1){ config+=2; }//note 2=2^1
+        //corner 4
+        x-=m_width/m_fsize;
+        if (fFunc(x,y)>=1){ config+=1; }//note 1=2^0
+        //NOTE: chose values based on key on web to minimize confusion
+        if(config!=0){std::cout<<config<<std::endl;}
+        //send to case switch
+        calculateLine(i,j,config);
+      }
+    }
+
+
+
 
 
     update();
 
 }
 
-void MyPanelOpenGL::updateLines(){
-  //compute and draw metabals lines TODO: put this in another function, create field of lines
-  for (int i =0; i<m_fsize; i++){
-    for (int j =0; j<m_fsize; j++){
-      //compute corners
-      int [4] corners;
+void MyPanelOpenGL::calculateLine(int i, int j, int config){
 
-    }
+  float qx, qy, px, py;
+  bool twoLines = false;
+  int ax=i*m_width/m_fsize;
+  int ay=j*m_height/m_fsize;
+  int dx=(i+1)*m_width/m_fsize;
+  int dy=(j+1)*m_height/m_fsize;
+  //NOTE: (bx, by)=(dx, ay) and (cx, cy)=(ax, dy)
+
+  //TODO TODO TODO:: check 'opposite' cases
+  if (config==0||config>=5){
+    m_Field[i][j].hide();
+    return;
+  } else if(config==1){
+    px= ax; //left side x
+    qy= dy; //bottom y
+    py=lerpFunc(ax, ay, ax, dy, true); //a, c, ydirection
+    qx=lerpFunc(dx, dy, ax, dy, false); //d, c, x direction
+  } else if(config==2){
+    py=dy; qx=dx;
+    px=lerpFunc(ax, dy, dx, dy, false); //c, d, xdir
+    qy=lerpFunc(dx, ay, dx, dy, true); //b, d, ydir
+  } else if(config ==3){
+    px=ax; qx=dx;
+    py= lerpFunc(ax, ay, ax, dy, true); //a, c, ydir
+    qy= lerpFunc(dx, ay, dx, dy, true); //b, d, ydir
+  } else if(config==4){
+    py=ay; qx=dx;
+    px=lerpFunc(ax, ay, dx, ay, false);//a, b, xdir
+    qy=lerpFunc(dx, dy, dx, ay, true);//d, b, ydir
+  } else if(config==5){
+    //two lines in this case!!
+    twoLines=true;
+    //first line
+    px=ax; qy=ay;
+    py=lerpFunc(ax, ay, ax, dy, true); //a, c, ydir
+    qx=lerpFunc(dx, dy, dx, ay, false); //d, b, xdir
+    //changeLine(vec2(px,py), vec2(qx,qy));
+    //create extra line
+    //px=dx; qy=dy;
+
+  } else if(config==6){
+
+  } else if(config==7){
+
+  } else if(config==8){
+  } else if(config==9){
+
+  } else if(config==10){
+
+  } else if(config==11){
+
+  } else if(config==12){
+
+  } else if(config==13){
+
+  } else if(config==14){
+
+  } else if(config==15){
+
   }
+
+
+  m_Field[i][j].changeLine(vec2(px,py), vec2(qx,qy));
+  m_Field[i][j].unhide();
+  //update line
 }
+
+
 
 /* mousePressEvent - grab click and add it to live_clicks queue. Then, depending
  *  on current move, call helper method to deal with fall out. If helper method
@@ -141,42 +238,6 @@ void MyPanelOpenGL::updateLines(){
 void MyPanelOpenGL::mousePressEvent(QMouseEvent *event){
     //init random circles
     addCircle(true);
-
-    /*
-    vec2 click(event->localPos().x(),event->localPos().y());
-    QVector4D worldPoint(click, 0, 1);
-    live_clicks.append(worldPoint.toVector2D());
-
-    //switch to check current mode
-    //hand info to helper funciton
-    //grab second click in helper...?
-
-    switch (m_currentMode)
-    {
-        case NONE:
-            break;
-        case MOVING:
-            moving();
-            break;
-        case DELETING:
-            deleting();
-            break;
-        case CHANGE_COLOR:
-            changeColor();
-            break;
-        case ADD_CIRCLE:
-            addCircle(false);
-            break;
-        /*case ADD_TRIANGLE:
-            addTriangle();
-            break;
-        case ADD_RECTANGLE:
-            addRectangle();
-            break;
-        case ADD_LINE:
-            addLine();
-            break;
-    }*/
 }
 
 /* mouseMoveEvent - if mouse is moving and MOVING is selected. and first click
@@ -333,15 +394,15 @@ void MyPanelOpenGL::addCircle(bool random){
 
 float MyPanelOpenGL::fFunc(float x, float y){
   float ret = 0;
-  for(int k =0; k<m_fsize; k++){
+  for(int k =0; k<m_shapes.size(); k++){
     float r_squared = m_shapes[k]->getRadius() * m_shapes[k]->getRadius();
     float x_comp = x - m_shapes[k]->getX();
     x_comp *= x_comp;
     float y_comp = y- m_shapes[k]->getY();
     y_comp *= y_comp;
     ret += r_squared/(x_comp+y_comp);
-  }
 
+  }
   return ret;
 
 
@@ -364,12 +425,18 @@ float MyPanelOpenGL::fFunc(float x, float y){
 }
 
 //basically computing q_y
-float MyPanelOpenGL::lerpFunc(int b_x, int b_y, int d_x, int d_y){
+float MyPanelOpenGL::lerpFunc(int b_x, int b_y, int d_x, int d_y,
+  bool yDir){
   float ret;
   ret = 1-fFunc(b_x, b_y);
   ret/= (fFunc(d_x, d_y)-fFunc(b_x, b_y));
-  ret *= (d_y-b_y);
-  ret = b_y - ret;
+  if(yDir){
+    ret *= (d_y-b_y);
+    ret = b_y - ret;
+  } else{
+    ret *= (d_x-b_x);
+    ret = b_x - ret;
+  }
   return ret;
 }
 

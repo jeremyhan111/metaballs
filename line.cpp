@@ -4,12 +4,15 @@
 using namespace cs40;
 
 Line::Line(){}
+
 Line::Line(QOpenGLShaderProgram* const prog, vec2 pt1, vec2 pt2) {
     m_prog = prog;
     int numVertices = 2;
 
     m_pts[0] = pt1;
     m_pts[1] = pt2;
+    second=false;
+    m_other= new Line(); //dummy to allow deleting later
 
     if (initVBO()) {
         /* IDs created by initVBO() */
@@ -45,7 +48,7 @@ Line::Line(const Line *other){
 
     m_prog = other->m_prog;
     int numVertices = 2;
-
+    second=false;
     for (int i=0; i<numVertices; i++){
       m_pts[i] = other->m_pts[i];
     }
@@ -72,6 +75,9 @@ Line::Line(const Line *other){
 
 void Line::draw(){
      drawHelper(GL_LINES, 2);
+     if(second){ //if actually two lines
+       m_other->draw();
+     }
 }
 
 bool Line::contains(const vec2& pt) const {
@@ -84,4 +90,16 @@ bool Line::contains(const vec2& pt) const {
       return true;
     }
     return false;
+}
+
+void Line::addSecond(vec2 pt1, vec2 pt2){
+  bool second = true;
+  delete m_other;
+  m_other= new Line(m_prog, pt1, pt2);
+}
+
+void Line::changeLine(vec2 pt1, vec2 pt2){
+  second = false; //always have to add second _after_ changeLine
+  m_pts[0]=pt1;
+  m_pts[1]=pt2;
 }

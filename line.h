@@ -26,9 +26,16 @@ class Line : public Drawable {
 	 // return true if shape contains point pt, false otherwise
      bool contains(const vec2 &pt) const;
 
+     void addSecond(vec2 pt1, vec2 pt2);
+
+     void changeLine(vec2 pt1, vec2 pt2);
+
    private:
      //Vertices of Line in ccw order
      vec2 m_pts[2];
+
+     bool second;
+     Line *m_other;
 
 		 /* don't implement this */
 		 //Line& operator=(const Line&); //prevent rec2=rec1 assignment

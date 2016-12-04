@@ -95,10 +95,10 @@ public slots:
     void setRandom(); //new random color only generated when box actually clicked
 
     /* trigger update of GL window */
-    void updateLines();
+    void calculateLine(int i, int j, int config);
     void updateTime();
     float fFunc(float x, float y);
-    float lerpFunc(int b_x, int b_y, int d_x, int d_y);
+    float lerpFunc(int b_x, int b_y, int d_x, int d_y, bool yDir);
 
 };
 

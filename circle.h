@@ -46,7 +46,7 @@ class Circle : public Drawable {
      int numVertices;
      float m_rad;
      vec2 m_velocity;
-     int timestep;
+     float timestep;
 
 
 		 /* don't implement this */

@@ -64,6 +64,8 @@ public:
     /* Hide shape so that it is not drawn */
     inline void hide(){ m_visible=false; }
 
+    inline void unhide(){ m_visible=true; }
+
     /* return true if visibile, false otherwise */
     inline bool isVisible() const { return m_visible; }
 
