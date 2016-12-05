@@ -30,6 +30,7 @@ class Line : public Drawable {
 
      void changeLine(vec2 pt1, vec2 pt2);
 
+     void printLine();
    private:
      //Vertices of Line in ccw order
      vec2 m_pts[2];

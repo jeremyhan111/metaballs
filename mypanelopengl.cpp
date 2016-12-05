@@ -62,6 +62,10 @@ void MyPanelOpenGL::initializeGL()
         m_Field[i][j].hide();
       }
     }
+    m_Field[0][0].unhide();
+    //TODO TODO TODO:: draw straight up not working for line
+    //m_Field[0][0].changeLine(vec2(100,100), vec2(200,200));
+    paintGL();
 
 
 }
@@ -106,6 +110,8 @@ void MyPanelOpenGL::paintGL(){
       for(int j=0; j<m_fsize; j++){
         if (m_Field[i][j].isVisible()){
           //TODO TODO TODO:: segfaulting here
+          std::cout<<i<<" "<<j<<std::endl; std::cout.flush();
+          m_Field[i][j].printLine();
           m_Field[i][j].draw();
           std::cout<<i<<" "<<j<<std::endl; std::cout.flush();
         }
@@ -142,9 +148,9 @@ void MyPanelOpenGL::updateTime(){
         x-=m_width/m_fsize;
         if (fFunc(x,y)>=1){ config+=1; }//note 1=2^0
         //NOTE: chose values based on key on web to minimize confusion
-        if(config!=0){std::cout<<config<<std::endl;}
+        if(config!=0){std::cout<<config<<std::endl;std::cout<<i<<" "<<j<<std::endl;}
         //send to case switch
-        calculateLine(i,j,config);
+        if (config!=0){calculateLine(i,j,config);}
       }
     }
 

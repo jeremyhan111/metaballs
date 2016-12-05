@@ -40,6 +40,7 @@ Line::Line(QOpenGLShaderProgram* const prog, vec2 pt1, vec2 pt2) {
 
         m_prog->release();
         m_vao->release();
+        m_vbo->release();
     }
 }
 
@@ -73,11 +74,21 @@ Line::Line(const Line *other){
     move(other->m_displacement[0], other->m_displacement[1]);
 }
 
+void Line::printLine(){ std::cout<<m_pts[0]<<" .... "<<m_pts[1]<<std::endl;}
+
 void Line::draw(){
+    /*printLine();
+     m_vbo->bind();
+     printLine();
+     m_vbo->allocate(m_pts, 2*sizeof(vec2));
+     m_vbo->release();*/
+     std::cout<<"!";
+     printLine();
+     std::cout.flush();
      drawHelper(GL_LINES, 2);
-     if(second){ //if actually two lines
+     /*if(second){ //if actually two lines
        m_other->draw();
-     }
+     }*/
 }
 
 bool Line::contains(const vec2& pt) const {
@@ -100,6 +111,7 @@ void Line::addSecond(vec2 pt1, vec2 pt2){
 
 void Line::changeLine(vec2 pt1, vec2 pt2){
   second = false; //always have to add second _after_ changeLine
+  unhide();
   m_pts[0]=pt1;
   m_pts[1]=pt2;
 }

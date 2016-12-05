@@ -4,7 +4,7 @@
 using namespace cs40;
 
 Drawable::Drawable() : m_prog(NULL), m_vao(NULL), m_vbo(NULL),
-    m_color(0,0,0), m_displacement(0,0), m_visible(true) {
+    m_color(1,1,1), m_displacement(0,0), m_visible(true) {
 }
 
 Drawable::~Drawable(){
@@ -55,8 +55,11 @@ void Drawable::move(float dx, float dy){
 
 /* used to just clean up the draw function */
 void Drawable::drawHelper(GLenum mode, int count){
+
     m_vao->bind();
+    std::cout<<"hello"; std::cout.flush();
     m_vbo->bind();
+    std::cout<<"hello"<<std::endl<<std::endl; std::cout.flush();
     m_prog->bind();
 
     /* VAO should be remembering this. It is not */
