@@ -77,12 +77,12 @@ Line::Line(const Line *other){
 void Line::printLine(){ std::cout<<m_pts[0]<<" .... "<<m_pts[1]<<std::endl;}
 
 void Line::draw(){
-    /*printLine();
+    printLine();
      m_vbo->bind();
      printLine();
      m_vbo->allocate(m_pts, 2*sizeof(vec2));
-     m_vbo->release();*/
-     std::cout<<"!";
+     m_vbo->release();
+     std::cout<<"!!!";
      printLine();
      std::cout.flush();
      drawHelper(GL_LINES, 2);

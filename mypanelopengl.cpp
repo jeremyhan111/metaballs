@@ -53,18 +53,18 @@ void MyPanelOpenGL::initializeGL()
     vec2 p1(0,0);
     vec2 p2(0,0);
 
-    m_Field = new Line*[m_fsize];
+    m_Field = new Line**[m_fsize];
     for (int i = 0; i<m_fsize; i++){
-      m_Field[i] = new Line[m_fsize];
+      m_Field[i] = new Line*[m_fsize];
       for( int j = 0; j<m_fsize; j++){
         //make default lines by overriding each 'line'
-        m_Field[i][j] = Line(m_shaderProgram, p1, p2);
-        m_Field[i][j].hide();
+        m_Field[i][j] = new Line(m_shaderProgram, p1, p2);
+        m_Field[i][j]->hide();
       }
     }
-    m_Field[0][0].unhide();
+    m_Field[0][0]->unhide();
     //TODO TODO TODO:: draw straight up not working for line
-    //m_Field[0][0].changeLine(vec2(100,100), vec2(200,200));
+    m_Field[0][0]->changeLine(vec2(100,100), vec2(200,200));
     paintGL();
 
 
@@ -108,11 +108,10 @@ void MyPanelOpenGL::paintGL(){
 
     for(int i=0; i<m_fsize; i++){
       for(int j=0; j<m_fsize; j++){
-        if (m_Field[i][j].isVisible()){
-          //TODO TODO TODO:: segfaulting here
+        if (m_Field[i][j]->isVisible()){
           std::cout<<i<<" "<<j<<std::endl; std::cout.flush();
-          m_Field[i][j].printLine();
-          m_Field[i][j].draw();
+          m_Field[i][j]->printLine();
+          m_Field[i][j]->draw();
           std::cout<<i<<" "<<j<<std::endl; std::cout.flush();
         }
       }
@@ -164,6 +163,8 @@ void MyPanelOpenGL::updateTime(){
 
 void MyPanelOpenGL::calculateLine(int i, int j, int config){
 
+  //TODO:: PROBLEM SOMEWHERE WITH FIELD COORS
+
   float qx, qy, px, py;
   bool twoLines = false;
   int ax=i*m_width/m_fsize;
@@ -173,8 +174,8 @@ void MyPanelOpenGL::calculateLine(int i, int j, int config){
   //NOTE: (bx, by)=(dx, ay) and (cx, cy)=(ax, dy)
 
   //TODO TODO TODO:: check 'opposite' cases
-  if (config==0||config>=5){
-    m_Field[i][j].hide();
+  if (config!=2){
+    m_Field[i][j]->hide();
     return;
   } else if(config==1){
     px= ax; //left side x
@@ -226,8 +227,8 @@ void MyPanelOpenGL::calculateLine(int i, int j, int config){
   }
 
 
-  m_Field[i][j].changeLine(vec2(px,py), vec2(qx,qy));
-  m_Field[i][j].unhide();
+  m_Field[i][j]->changeLine(vec2(px,py), vec2(qx,qy));
+  m_Field[i][j]->unhide();
   //update line
 }
 

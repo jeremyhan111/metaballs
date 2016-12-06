@@ -39,7 +39,7 @@ public:
 
 private:
     int m_width, m_height;
-    Line ** m_Field; //2d array of pointers to lines
+    Line *** m_Field; //2d array of pointers to lines
     int m_fsize;
 
     /* shader/program objects */
