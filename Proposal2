@@ -1,0 +1,4 @@
+We implemented the circles bouncing around in the world. We are currently trying to get the LERP to work and are debugging.
+We decided to just use the line class that we created from Lab 2 and we understand the math behind LERP. However, the math 
+on the website only shows it for one case, so we are trying to figure it out for all sixteen cases right now. We are also 
+trying to get some lines to appear for just a couple of the cases. 
