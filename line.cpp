@@ -77,18 +77,18 @@ Line::Line(const Line *other){
 void Line::printLine(){ std::cout<<m_pts[0]<<" .... "<<m_pts[1]<<std::endl;}
 
 void Line::draw(){
-    printLine();
+    //printLine();
      m_vbo->bind();
-     printLine();
+     //printLine();
      m_vbo->allocate(m_pts, 2*sizeof(vec2));
      m_vbo->release();
-     std::cout<<"!!!";
-     printLine();
+     //std::cout<<"!!!";
+     //printLine();
      std::cout.flush();
      drawHelper(GL_LINES, 2);
-     /*if(second){ //if actually two lines
+     if(second){ //if actually two lines
        m_other->draw();
-     }*/
+     }
 }
 
 bool Line::contains(const vec2& pt) const {
@@ -104,7 +104,7 @@ bool Line::contains(const vec2& pt) const {
 }
 
 void Line::addSecond(vec2 pt1, vec2 pt2){
-  bool second = true;
+  second = true;
   delete m_other;
   m_other= new Line(m_prog, pt1, pt2);
 }

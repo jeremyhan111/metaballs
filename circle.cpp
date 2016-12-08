@@ -224,5 +224,5 @@ float Circle::getX(){
 
 float Circle::getY() {
   vec2 temp = m_pts[0]+m_displacement;
-  return temp[0];
+  return temp[1];
 }

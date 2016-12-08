@@ -57,9 +57,9 @@ void Drawable::move(float dx, float dy){
 void Drawable::drawHelper(GLenum mode, int count){
 
     m_vao->bind();
-    std::cout<<"hello"; std::cout.flush();
+    //std::cout<<"hello"; std::cout.flush();
     m_vbo->bind();
-    std::cout<<"hello"<<std::endl<<std::endl; std::cout.flush();
+    //std::cout<<"hello"<<std::endl<<std::endl; std::cout.flush();
     m_prog->bind();
 
     /* VAO should be remembering this. It is not */
