@@ -77,7 +77,7 @@ Circle::Circle(QOpenGLShaderProgram* const prog,
 
     m_pts[0] = pt; //center point
 
-    timestep = 1;
+    timestep = 5;
     m_velocity[0] = 1;
     m_velocity[1] = -1;
 

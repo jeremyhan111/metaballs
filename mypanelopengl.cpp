@@ -41,11 +41,45 @@ void MyPanelOpenGL::initializeGL()
     glClearColor(1.0f, 1.0f, 1.0f, 1.0f);
     createShaders();
 
-    m_timer = new QTimer(this);
-    connect(m_timer, SIGNAL(timeout()), this, SLOT(updateTime()));
-    m_timer->start(10);
 
-    m_fsize = 100;
+
+
+    int option = 0;
+
+    if(option==0){ //complete simulation
+      printGrid =false;
+      printCircles=false;
+      m_fsize=100;
+      test=false;
+    } else if (option==1){ //showing balls
+      printGrid =false;
+      printCircles=true;
+      m_fsize=100;
+      test=false;
+    } else if(option==2){ //showing fFunc calculations
+      printGrid =true;
+      printCircles=true;
+      m_fsize=20;
+      test=true;
+    } else if(option==3){ //showing lerp
+      printGrid =true;
+      printCircles=false;
+      m_fsize=20;
+      test=true;
+    } else if(option==4){ //showing lerp in action
+      printGrid =true;
+      printCircles=false;
+      m_fsize=20;
+      test=false;
+    }
+
+    if (!test){
+      m_timer = new QTimer(this);
+      connect(m_timer, SIGNAL(timeout()), this, SLOT(updateTime()));
+      m_timer->start(1);
+    }
+
+    //m_fsize = 100;
     vec2 p1(0,0);
     vec2 p2(0,0);
 
@@ -77,6 +111,11 @@ void MyPanelOpenGL::resizeGL(int w, int h)
     glViewport(0,0,w, h);
     m_matrix.setColumn(0,QVector4D(2./w,0,0,0));
     m_matrix.setColumn(1,QVector4D(0,-2./h,0,0));
+
+    if (test){ //kinda jenky
+      addCircle();
+    }
+
     update();
 
 }
@@ -98,14 +137,15 @@ void MyPanelOpenGL::paintGL(){
 
     //print circles
     for(int i=0; i<m_shapes.size(); i++){
-      //NOTE: uncomment this to draw original circles
-      //if (m_shapes[i]->isVisible()){ m_shapes[i]->draw(); }
+      if(printCircles)
+      if (m_shapes[i]->isVisible()){ m_shapes[i]->draw(); }
     }
 
     for(int i=0; i<m_fsize; i++){
-      //NOTE: uncomment these to draw grid
-      //m_grid[i][0]->draw();
-      //m_grid[i][1]->draw();
+      if(printGrid){
+        m_grid[i][0]->draw();
+        m_grid[i][1]->draw();
+      }
       for(int j=0; j<m_fsize; j++){
         if (m_Field[i][j]->isVisible()){
           m_Field[i][j]->draw();
@@ -231,7 +271,6 @@ void MyPanelOpenGL::calculateLine(int i, int j, int config){
 /* mousePressEvent */
 void MyPanelOpenGL::mousePressEvent(QMouseEvent *event){
     //init random circles
-    bool test = false;
     if (test) { updateTime();}
     else { addCircle(); }
 }
@@ -305,7 +344,7 @@ void MyPanelOpenGL::addCircle(){
 
   Circle* circ;
   circ = new Circle(m_shaderProgram, pt, rad);
-  circ->setColor(curr_color);
+  circ->setColor(vec3(0,0,1));
 
   m_shapes.append(circ);
   update();

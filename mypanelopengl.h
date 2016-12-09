@@ -27,6 +27,11 @@ public:
     virtual ~MyPanelOpenGL();
 
 private:
+
+    bool printCircles;
+    bool printGrid;
+    bool test;
+
     float m_width, m_height; //should technically be int!
     Line *** m_Field; //2d array of pointers to lines
     Line *** m_grid;
